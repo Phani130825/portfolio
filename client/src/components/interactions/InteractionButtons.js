@@ -83,6 +83,30 @@ const InteractionButtons = ({ targetType, targetId }) => {
     setOpenComment(false);
   };
 
+  const handleRating = (event, newValue) => {
+    if (!isAuthenticated || !newValue) return;
+    
+    const existingRating = userInteractions.find(
+      i => i.type === 'rating' && i.targetType === targetType && i.targetId === targetId
+    );
+
+    if (existingRating) {
+      dispatch(addInteraction({
+        type: 'rating',
+        targetType,
+        targetId,
+        rating: newValue
+      }));
+    } else {
+      dispatch(addInteraction({
+        type: 'rating',
+        targetType,
+        targetId,
+        rating: newValue
+      }));
+    }
+  };
+
   const isLiked = userInteractions.some(
     i => i.type === 'like' && i.targetType === targetType && i.targetId === targetId
   );
@@ -149,6 +173,7 @@ const InteractionButtons = ({ targetType, targetId }) => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Rating
             value={userRating}
+            onChange={handleRating}
             disabled={!isAuthenticated || loading}
           />
           {averageRating > 0 && (

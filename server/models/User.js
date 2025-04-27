@@ -54,7 +54,18 @@ userSchema.pre('findOneAndUpdate', async function(next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function(password) {
-    return bcrypt.compare(password, this.password);
+    try {
+        const isMatch = await bcrypt.compare(password, this.password);
+        console.log('Password comparison:', {
+            providedPassword: password,
+            hashedPassword: this.password,
+            isMatch: isMatch
+        });
+        return isMatch;
+    } catch (error) {
+        console.error('Password comparison error:', error);
+        return false;
+    }
 };
 
 const User = mongoose.model('User', userSchema);

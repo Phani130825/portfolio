@@ -84,8 +84,43 @@ const BlogPost = () => {
           ))}
         </Box>
         <Divider sx={{ my: 3 }} />
-        <Box sx={{ typography: 'body1' }}>
-          <ReactMarkdown>{post.content}</ReactMarkdown>
+        <Box 
+          sx={{ 
+            typography: 'body1',
+            maxHeight: '70vh',
+            maxWidth: '100%',
+            overflow: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '8px',
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#f1f1f1',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#888',
+              borderRadius: '4px',
+              '&:hover': {
+                background: '#555',
+              },
+            },
+            '& img': {
+              maxWidth: '100%',
+              height: 'auto',
+            },
+            '& pre': {
+              maxWidth: '100%',
+              overflowX: 'auto',
+            },
+            '& table': {
+              maxWidth: '100%',
+              overflowX: 'auto',
+              display: 'block',
+            }
+          }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </Box>
       </Paper>
     </Container>

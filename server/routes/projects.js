@@ -69,10 +69,12 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
             return res.status(400).json({ message: 'Title, description, and image are required' });
         }
 
+        const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
+
         const project = new Project({
             title,
             description,
-            imageUrl: `/uploads/projects/${req.file.filename}`,
+            imageUrl: `${serverUrl}/uploads/projects/${req.file.filename}`,
             technologies: technologies ? technologies.split(',').map(tech => tech.trim()) : [],
             githubUrl,
             liveUrl,
@@ -103,7 +105,8 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
         };
 
         if (req.file) {
-            updateData.imageUrl = `/uploads/projects/${req.file.filename}`;
+            const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
+            updateData.imageUrl = `${serverUrl}/uploads/projects/${req.file.filename}`;
         }
 
         const project = await Project.findByIdAndUpdate(

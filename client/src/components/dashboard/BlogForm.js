@@ -201,7 +201,7 @@ const BlogForm = ({ blog = null, onClose }) => {
     
     // Add all form fields to FormData
     formDataToSend.append('title', formData.title.trim());
-    formDataToSend.append('content', formData.content.trim());
+    formDataToSend.append('content', formData.content); // Send raw HTML content
     formDataToSend.append('excerpt', formData.excerpt.trim());
     formDataToSend.append('status', formData.status || 'draft'); // Ensure status is always set
     formDataToSend.append('tags', JSON.stringify(formData.tags));

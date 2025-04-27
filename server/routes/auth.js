@@ -90,19 +90,22 @@ router.post('/login', async (req, res) => {
         }
 
         // Find user
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
+            console.log('User not found for email:', email);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // Check password
         const isMatch = await user.comparePassword(password);
+        console.log('Password match result:', isMatch);
         if (!isMatch) {
+            console.log('Password mismatch for user:', email);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // Ensure admin role for specific email
-        if (email === 'phanigdg@gmail.com' && user.role !== 'admin') {
+        if (email.toLowerCase() === 'phanigdg@gmail.com' && user.role !== 'admin') {
             user.role = 'admin';
             await user.save();
         }

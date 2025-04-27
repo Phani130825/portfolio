@@ -25,7 +25,8 @@ const pages = [
 ];
 
 const settings = [
-  { title: 'Dashboard', path: '/dashboard' },
+  { title: 'Dashboard', path: '/dashboard', adminOnly: true },
+  { title: 'Bookmarks', path: '/bookmarks' },
   { title: 'Logout', action: 'logout' },
 ];
 
@@ -185,12 +186,14 @@ const Navbar = () => {
                   onClose={handleCloseUserMenu}
                 >
                   {settings.map((setting) => (
-                    <MenuItem
-                      key={setting.title}
-                      onClick={() => handleMenuItemClick(setting)}
-                    >
-                      <Typography textAlign="center">{setting.title}</Typography>
-                    </MenuItem>
+                    (!setting.adminOnly || (setting.adminOnly && user?.role === 'admin')) && (
+                      <MenuItem
+                        key={setting.title}
+                        onClick={() => handleMenuItemClick(setting)}
+                      >
+                        <Typography textAlign="center">{setting.title}</Typography>
+                      </MenuItem>
+                    )
                   ))}
                 </Menu>
               </>

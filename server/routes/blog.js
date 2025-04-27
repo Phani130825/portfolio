@@ -121,15 +121,17 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
         message: 'Invalid tags format'
       });
     }
+
+    const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
     
     const post = new Blog({
       title,
-      content,
+      content: content, // Store the raw HTML content from Quill
       excerpt,
       status: status || 'draft', // Default to draft if not specified
       tags: parsedTags,
       author: req.user._id,
-      imageUrl: req.file ? `/uploads/blog/${req.file.filename}` : null
+      imageUrl: req.file ? `${serverUrl}/uploads/blog/${req.file.filename}` : null
     });
 
     console.log('Creating new blog post:', post);
@@ -190,7 +192,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
     // Prepare update data
     const updateData = {
       title,
-      content,
+      content: content, // Store the raw HTML content from Quill
       excerpt,
       status,
       tags: parsedTags
@@ -198,6 +200,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
 
     // Handle image update if new image is uploaded
     if (req.file) {
+      const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
       // Delete old image if exists
       if (existingPost.imageUrl) {
         const oldImagePath = path.join(__dirname, '..', existingPost.imageUrl);
@@ -205,7 +208,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
           fs.unlinkSync(oldImagePath);
         }
       }
-      updateData.imageUrl = `/uploads/blog/${req.file.filename}`;
+      updateData.imageUrl = `${serverUrl}/uploads/blog/${req.file.filename}`;
     }
 
     // Update the post
