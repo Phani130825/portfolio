@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
-const { verifyToken } = require('../middleware/auth');
+const auth = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 
@@ -88,7 +88,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create project (admin only)
-router.post('/', verifyToken, upload.single('image'), async (req, res) => {
+router.post('/', auth, upload.single('image'), async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized' });
@@ -110,7 +110,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
 });
 
 // Update project (admin only)
-router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
+router.put('/:id', auth, upload.single('image'), async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized' });
@@ -143,7 +143,7 @@ router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
 });
 
 // Delete project (admin only)
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized' });
