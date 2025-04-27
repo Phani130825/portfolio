@@ -64,11 +64,12 @@ const Contact = () => {
       setLoading(true);
       setError(null);
       try {
-        await axios.post('http://localhost:5000/api/contact', formData);
+        const response = await axios.post('http://localhost:5000/api/contact', formData);
         setSuccess(true);
         setFormData({ name: '', email: '', message: '' });
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to send message');
+        console.error('Contact form error:', err);
+        setError(err.response?.data?.message || 'Failed to send message. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -91,7 +92,16 @@ const Contact = () => {
             <Paper sx={{ p: 3, height: '100%' }}>
               <Box sx={{ mb: 3 }}>
                 <EmailIcon sx={{ mr: 1 }} />
-                <Typography variant="body1">phanidattakandukuri1308@gmail.com</Typography>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    wordBreak: 'break-all',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  phanidattakandukuri1308@gmail.com
+                </Typography>
               </Box>
               <Box sx={{ mb: 3 }}>
                 <PhoneIcon sx={{ mr: 1 }} />
