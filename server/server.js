@@ -12,7 +12,9 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: process.env.NODE_ENV === 'production' 
+        ? true  // Allow all origins in production since we're serving from the same domain
+        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -55,6 +57,17 @@ app.use('/api/interactions', require('./routes/userInteractions'));
 app.use('/api/learning', require('./routes/learningProgress'));
 app.use('/api/resources', require('./routes/resources'));
 app.use('/api/feedback', require('./routes/feedback'));
+
+// Serve static files from the React app in production
+if (process.env.NODE_ENV === 'production') {
+    // Serve static files from the React app
+    app.use(express.static(path.join(__dirname, '../client/build')));
+
+    // Handle React routing, return all requests to React app
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
