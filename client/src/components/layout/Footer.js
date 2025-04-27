@@ -1,11 +1,12 @@
 import React from 'react';
-import { Box, Container, Typography, IconButton, Link } from '@mui/material';
+import { Box, Container, Typography, IconButton, Link, useTheme } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/Twitter';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const theme = useTheme();
 
   return (
     <Box
@@ -13,11 +14,16 @@ const Footer = () => {
       sx={{
         py: 3,
         px: 2,
-        mt: 'auto',
-        backgroundColor: (theme) =>
-          theme.palette.mode === 'light'
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800],
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: theme.palette.mode === 'light' 
+          ? 'rgba(255, 255, 255, 0.8)'
+          : 'rgba(15, 23, 42, 0.8)',
+        backdropFilter: 'blur(8px)',
+        borderTop: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`,
+        transition: 'all 0.2s ease-in-out',
       }}
     >
       <Container maxWidth="lg">
@@ -27,19 +33,42 @@ const Footer = () => {
             flexDirection: { xs: 'column', sm: 'row' },
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: 2,
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: theme.palette.mode === 'light' ? 'text.secondary' : 'text.secondary',
+              transition: 'color 0.2s ease-in-out',
+            }}
+          >
             © {currentYear} Kandukuri Phani Datta. All rights reserved.
           </Typography>
 
-          <Box sx={{ mt: { xs: 2, sm: 0 } }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              gap: 1,
+              mt: { xs: 2, sm: 0 },
+            }}
+          >
             <IconButton
               component={Link}
               href="https://github.com/phani130825"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
+              sx={{
+                color: theme.palette.mode === 'light' ? 'primary.main' : 'primary.light',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light'
+                    ? 'rgba(37, 99, 235, 0.1)'
+                    : 'rgba(59, 130, 246, 0.1)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
             >
               <GitHubIcon />
             </IconButton>
@@ -49,6 +78,16 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
+              sx={{
+                color: theme.palette.mode === 'light' ? 'primary.main' : 'primary.light',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light'
+                    ? 'rgba(37, 99, 235, 0.1)'
+                    : 'rgba(59, 130, 246, 0.1)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
             >
               <LinkedInIcon />
             </IconButton>
@@ -58,6 +97,16 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
+              sx={{
+                color: theme.palette.mode === 'light' ? 'primary.main' : 'primary.light',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'light'
+                    ? 'rgba(37, 99, 235, 0.1)'
+                    : 'rgba(59, 130, 246, 0.1)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
             >
               <TwitterIcon />
             </IconButton>

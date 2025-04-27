@@ -11,7 +11,7 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
-import ReactMarkdown from 'react-markdown';
+// import ReactMarkdown from 'react-markdown';
 import { fetchBlogPost } from '../store/slices/blogSlice';
 
 const BlogPost = () => {

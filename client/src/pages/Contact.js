@@ -13,7 +13,8 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { sendMessage } from '../store/slices/contactSlice';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
   const validateForm = () => {
     const newErrors = {};
@@ -60,19 +62,23 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axios.post('http://localhost:5000/api/contact', formData);
-        setSuccess(true);
-        setFormData({ name: '', email: '', message: '' });
-      } catch (err) {
-        console.error('Contact form error:', err);
-        setError(err.response?.data?.message || 'Failed to send message. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
+    if (!validateForm()) {
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await dispatch(sendMessage(formData)).unwrap();
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+      });
+      setSuccess(true);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,54 +1,41 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Box, Container } from '@mui/material';
+import React, { useState, useMemo } from 'react';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { getTheme } from './theme';
+import AppRoutes from './routes';
 import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import ProjectDetail from './pages/ProjectDetail';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
-import Contact from './pages/Contact';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import PrivateRoute from './components/routing/PrivateRoute';
-import Bookmarks from './pages/Bookmarks';
+import { Box } from '@mui/material';
 
 function App() {
+  const [mode, setMode] = useState('light');
+
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    []
+  );
+
+  const theme = useMemo(() => getTheme(mode), [mode]);
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar />
-      <Container component="main" sx={{ flex: 1, py: 4 }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/:id" element={<ProjectDetail />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/bookmarks"
-            element={
-              <PrivateRoute>
-                <Bookmarks />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </Container>
-      <Footer />
-    </Box>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        position: 'relative',
+        bgcolor: 'background.default',
+        color: 'text.primary',
+      }}>
+        <Navbar toggleColorMode={colorMode.toggleColorMode} />
+        <Box sx={{ flex: 1, pb: '60px' }}>
+          <AppRoutes />
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 
