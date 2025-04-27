@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Grid,
@@ -16,6 +17,7 @@ import { fetchProjects } from '../store/slices/projectSlice';
 
 const Projects = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { projects, loading, error } = useSelector((state) => state.projects);
 
   useEffect(() => {
@@ -56,10 +58,12 @@ const Projects = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'transform 0.2s',
+                cursor: 'pointer',
                 '&:hover': {
                   transform: 'scale(1.02)',
                 },
               }}
+              onClick={() => navigate(`/projects/${project._id}`)}
             >
               <CardMedia
                 component="img"
@@ -92,6 +96,7 @@ const Projects = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       color="primary"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       GitHub
                     </Typography>
@@ -103,6 +108,7 @@ const Projects = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       color="primary"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       Live Demo
                     </Typography>

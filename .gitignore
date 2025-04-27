@@ -80,3 +80,59 @@ docs/
 
 # Storybook output
 storybook-static/
+
+# Upload directories
+uploads/
+server/uploads/
+client/uploads/
+**/uploads/
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+*.mkv
+*.webm
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.m4a
+*.aac
+
+# Large image files
+*.psd
+*.ai
+*.indd
+*.ind
+*.raw
+*.cr2
+*.nef
+*.arw
+*.tiff
+*.tif
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+*.mdb
+*.accdb
+
+# Backup files
+*.bak
+*.backup
+*~
+*.swp
+*.swo
+
+# Package manager lock files (optional, depending on your needs)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Local development files
+*.local
+local.*

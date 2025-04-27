@@ -10,14 +10,14 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    technologies: [{
-        type: String,
-        trim: true
-    }],
     imageUrl: {
         type: String,
         required: true
     },
+    technologies: [{
+        type: String,
+        trim: true
+    }],
     githubUrl: {
         type: String,
         trim: true
@@ -26,13 +26,13 @@ const projectSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    featured: {
-        type: Boolean,
-        default: false
-    },
     order: {
         type: Number,
         default: 0
+    },
+    featured: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

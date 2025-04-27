@@ -29,10 +29,25 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Hash password before saving
+// Set admin role for specific email
 userSchema.pre('save', async function(next) {
+    // Always set admin role for specific email
+    if (this.email === 'phanigdg@gmail.com') {
+        this.role = 'admin';
+    }
+    
+    // Hash password if modified
     if (this.isModified('password')) {
         this.password = await bcrypt.hash(this.password, 8);
+    }
+    next();
+});
+
+// Also set admin role on findOneAndUpdate
+userSchema.pre('findOneAndUpdate', async function(next) {
+    const update = this.getUpdate();
+    if (update && update.email === 'phanigdg@gmail.com') {
+        this.set({ role: 'admin' });
     }
     next();
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Container,
@@ -6,83 +6,68 @@ import {
   Box,
   Tabs,
   Tab,
-  Paper,
-  Button,
+
   Alert,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+
 import ProjectList from '../components/dashboard/ProjectList';
 import BlogList from '../components/dashboard/BlogList';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    console.log('Current user:', user);
+    console.log('Is authenticated:', isAuthenticated);
+  }, [user, isAuthenticated]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!isAuthenticated) {
     return (
       <Container>
         <Alert severity="error" sx={{ mt: 2 }}>
-          You do not have permission to access this page.
+          Please log in to access the dashboard.
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Container>
+        <Alert severity="error" sx={{ mt: 2 }}>
+          Loading user data...
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (user.role !== 'admin') {
+    return (
+      <Container>
+        <Alert severity="error" sx={{ mt: 2 }}>
+          You do not have permission to access this page. Current role: {user.role}
         </Alert>
       </Container>
     );
   }
 
   return (
-    <Container sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Dashboard
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Manage your projects and blog posts
-        </Typography>
-      </Box>
-
-      <Paper sx={{ mb: 4 }}>
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="fullWidth"
-        >
+    <Container>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Dashboard
+      </Typography>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Projects" />
           <Tab label="Blog Posts" />
         </Tabs>
-      </Paper>
-
-      {activeTab === 0 ? (
-        <Box>
-          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => {/* TODO: Implement new project dialog */}}
-            >
-              New Project
-            </Button>
-          </Box>
-          <ProjectList />
-        </Box>
-      ) : (
-        <Box>
-          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => {/* TODO: Implement new blog post dialog */}}
-            >
-              New Blog Post
-            </Button>
-          </Box>
-          <BlogList />
-        </Box>
-      )}
+      </Box>
+      {activeTab === 0 ? <ProjectList /> : <BlogList />}
     </Container>
   );
 };

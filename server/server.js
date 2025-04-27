@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio', {
     useNewUrlParser: true,
@@ -33,11 +37,24 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio
     process.exit(1);
 });
 
+// Create upload directories if they don't exist
+const fs = require('fs');
+const uploadDirs = ['uploads/projects', 'uploads/resources', 'uploads/feedback'];
+uploadDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/blog', require('./routes/blog'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/interactions', require('./routes/userInteractions'));
+app.use('/api/learning', require('./routes/learningProgress'));
+app.use('/api/resources', require('./routes/resources'));
+app.use('/api/feedback', require('./routes/feedback'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -50,6 +67,9 @@ app.use((err, req, res, next) => {
     }
     if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (err.name === 'MulterError') {
+        return res.status(400).json({ message: err.message });
     }
     res.status(500).json({ message: 'Something went wrong!' });
 });

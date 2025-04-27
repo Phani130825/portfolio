@@ -16,13 +16,39 @@ export const fetchProjects = createAsyncThunk(
   }
 );
 
+export const fetchProject = createAsyncThunk(
+  'projects/fetchProject',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/projects/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const createProject = createAsyncThunk(
   'projects/createProject',
   async (projectData, { getState, rejectWithValue }) => {
     try {
       const { token } = getState().auth;
-      const response = await axios.post(`${API_URL}/projects`, projectData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const formData = new FormData();
+      
+      // Append all project data to formData
+      Object.keys(projectData).forEach(key => {
+        if (key === 'technologies') {
+          formData.append(key, projectData[key].join(','));
+        } else {
+          formData.append(key, projectData[key]);
+        }
+      });
+
+      const response = await axios.post(`${API_URL}/projects`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       return response.data;
     } catch (error) {
@@ -36,8 +62,22 @@ export const updateProject = createAsyncThunk(
   async ({ id, projectData }, { getState, rejectWithValue }) => {
     try {
       const { token } = getState().auth;
-      const response = await axios.put(`${API_URL}/projects/${id}`, projectData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const formData = new FormData();
+      
+      // Append all project data to formData
+      Object.keys(projectData).forEach(key => {
+        if (key === 'technologies') {
+          formData.append(key, projectData[key].join(','));
+        } else {
+          formData.append(key, projectData[key]);
+        }
+      });
+
+      const response = await axios.put(`${API_URL}/projects/${id}`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       return response.data;
     } catch (error) {
@@ -63,6 +103,7 @@ export const deleteProject = createAsyncThunk(
 
 const initialState = {
   projects: [],
+  currentProject: null,
   loading: false,
   error: null,
 };
@@ -74,10 +115,13 @@ const projectSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearCurrentProject: (state) => {
+      state.currentProject = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Projects
+      // Fetch all projects
       .addCase(fetchProjects.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -88,9 +132,22 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Failed to fetch projects';
+        state.error = action.payload?.message || 'Error fetching projects';
       })
-      // Create Project
+      // Fetch single project
+      .addCase(fetchProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProject = action.payload;
+      })
+      .addCase(fetchProject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || 'Error fetching project';
+      })
+      // Create project
       .addCase(createProject.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -101,9 +158,9 @@ const projectSlice = createSlice({
       })
       .addCase(createProject.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Failed to create project';
+        state.error = action.payload?.message || 'Error creating project';
       })
-      // Update Project
+      // Update project
       .addCase(updateProject.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -114,12 +171,13 @@ const projectSlice = createSlice({
         if (index !== -1) {
           state.projects[index] = action.payload;
         }
+        state.currentProject = action.payload;
       })
       .addCase(updateProject.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Failed to update project';
+        state.error = action.payload?.message || 'Error updating project';
       })
-      // Delete Project
+      // Delete project
       .addCase(deleteProject.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -130,10 +188,10 @@ const projectSlice = createSlice({
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Failed to delete project';
+        state.error = action.payload?.message || 'Error deleting project';
       });
   },
 });
 
-export const { clearError } = projectSlice.actions;
+export const { clearError, clearCurrentProject } = projectSlice.actions;
 export default projectSlice.reducer; 
