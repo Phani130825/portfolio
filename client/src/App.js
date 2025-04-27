@@ -1,12 +1,20 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
+import { useDispatch } from 'react-redux';
 import { getTheme } from './theme';
 import AppRoutes from './routes';
 import Navbar from './components/layout/Navbar';
 import { Box } from '@mui/material';
+import { verifyToken } from './store/slices/authSlice';
 
 function App() {
   const [mode, setMode] = useState('light');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Verify token on initial load
+    dispatch(verifyToken());
+  }, [dispatch]);
 
   const colorMode = useMemo(
     () => ({
