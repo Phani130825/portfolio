@@ -9,24 +9,34 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
 } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchProjects } from '../store/slices/projectSlice';
 import { fetchBlogPosts } from '../store/slices/blogSlice';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { projects } = useSelector((state) => state.projects);
-  const { posts } = useSelector((state) => state.blog);
+  const dispatch = useDispatch();
+  const { projects, loading: projectsLoading } = useSelector((state) => state.projects);
+  const { posts, loading: postsLoading } = useSelector((state) => state.blog);
 
   React.useEffect(() => {
     // Fetch featured content
-    fetchProjects();
-    fetchBlogPosts();
-  }, []);
+    dispatch(fetchProjects());
+    dispatch(fetchBlogPosts());
+  }, [dispatch]);
 
-  const featuredProjects = projects.slice(0, 3);
-  const featuredPosts = posts.slice(0, 3);
+  const featuredProjects = projects?.slice(0, 3) || [];
+  const featuredPosts = posts?.slice(0, 3) || [];
+
+  if (projectsLoading || postsLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -97,6 +107,10 @@ const Home = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                  },
                 }}
                 onClick={() => navigate(`/projects/${project._id}`)}
               >
@@ -140,6 +154,10 @@ const Home = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                  },
                 }}
                 onClick={() => navigate(`/blog/${post.slug}`)}
               >
