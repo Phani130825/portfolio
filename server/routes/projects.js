@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
-const auth = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 
@@ -36,13 +36,33 @@ function checkFileType(file, cb) {
     }
 }
 
+// Helper function to get base URL
+const getBaseUrl = (req) => {
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://phanis-portfolio.onrender.com';
+    }
+    return `http://localhost:${process.env.PORT || 5000}`;
+};
+
 // Get all projects
 router.get('/', async (req, res) => {
     try {
         const projects = await Project.find().sort({ order: 1 });
-        res.json(projects);
+        // Update image URLs with correct base URL
+        const updatedProjects = projects.map(project => {
+            const projectObj = project.toObject();
+            if (projectObj.imageUrl) {
+                projectObj.imageUrl = projectObj.imageUrl.replace(
+                    /^http:\/\/localhost:5000/,
+                    getBaseUrl(req)
+                );
+            }
+            return projectObj;
+        });
+        res.json(updatedProjects);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching projects', error: error.message });
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ message: 'Error fetching projects' });
     }
 });
 
@@ -53,66 +73,62 @@ router.get('/:id', async (req, res) => {
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
-        res.json(project);
+        const projectObj = project.toObject();
+        if (projectObj.imageUrl) {
+            projectObj.imageUrl = projectObj.imageUrl.replace(
+                /^http:\/\/localhost:5000/,
+                getBaseUrl(req)
+            );
+        }
+        res.json(projectObj);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching project', error: error.message });
+        console.error('Error fetching project:', error);
+        res.status(500).json({ message: 'Error fetching project' });
     }
 });
 
-// Create new project (protected route)
-router.post('/', auth, upload.single('image'), async (req, res) => {
+// Create project (admin only)
+router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     try {
-        const { title, description, technologies, githubUrl, liveUrl, order, featured } = req.body;
-        
-        // Validate input
-        if (!title || !description || !req.file) {
-            return res.status(400).json({ message: 'Title, description, and image are required' });
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
         }
 
-        const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
+        const projectData = {
+            ...req.body,
+            technologies: req.body.technologies.split(','),
+            imageUrl: req.file ? `${getBaseUrl(req)}/uploads/projects/${req.file.filename}` : null
+        };
 
-        const project = new Project({
-            title,
-            description,
-            imageUrl: `${serverUrl}/uploads/projects/${req.file.filename}`,
-            technologies: technologies ? technologies.split(',').map(tech => tech.trim()) : [],
-            githubUrl,
-            liveUrl,
-            order: order || 0,
-            featured: featured === 'true'
-        });
-
+        const project = new Project(projectData);
         await project.save();
         res.status(201).json(project);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating project', error: error.message });
+        console.error('Error creating project:', error);
+        res.status(500).json({ message: 'Error creating project' });
     }
 });
 
-// Update project (protected route)
-router.put('/:id', auth, upload.single('image'), async (req, res) => {
+// Update project (admin only)
+router.put('/:id', verifyToken, upload.single('image'), async (req, res) => {
     try {
-        const { title, description, technologies, githubUrl, liveUrl, order, featured } = req.body;
-        
-        const updateData = {
-            title,
-            description,
-            technologies: technologies ? technologies.split(',').map(tech => tech.trim()) : [],
-            githubUrl,
-            liveUrl,
-            order: order || 0,
-            featured: featured === 'true'
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        const projectData = {
+            ...req.body,
+            technologies: req.body.technologies.split(',')
         };
 
         if (req.file) {
-            const serverUrl = process.env.SERVER_URL || 'http://localhost:5000';
-            updateData.imageUrl = `${serverUrl}/uploads/projects/${req.file.filename}`;
+            projectData.imageUrl = `${getBaseUrl(req)}/uploads/projects/${req.file.filename}`;
         }
 
         const project = await Project.findByIdAndUpdate(
             req.params.id,
-            updateData,
-            { new: true, runValidators: true }
+            projectData,
+            { new: true }
         );
 
         if (!project) {
@@ -121,20 +137,27 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
 
         res.json(project);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating project', error: error.message });
+        console.error('Error updating project:', error);
+        res.status(500).json({ message: 'Error updating project' });
     }
 });
 
-// Delete project (protected route)
-router.delete('/:id', auth, async (req, res) => {
+// Delete project (admin only)
+router.delete('/:id', verifyToken, async (req, res) => {
     try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
         const project = await Project.findByIdAndDelete(req.params.id);
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
+
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting project', error: error.message });
+        console.error('Error deleting project:', error);
+        res.status(500).json({ message: 'Error deleting project' });
     }
 });
 
