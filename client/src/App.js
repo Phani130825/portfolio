@@ -8,7 +8,7 @@ import { Box } from '@mui/material';
 import { verifyToken } from './store/slices/authSlice';
 
 function App() {
-  const [mode, setMode] = useState('light');
+  const [mode, setMode] = useState('dark');
   const dispatch = useDispatch();
 
   useEffect(() => {
