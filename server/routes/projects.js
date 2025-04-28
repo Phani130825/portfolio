@@ -169,11 +169,11 @@ router.delete('/:id', auth, async (req, res) => {
             await cloudinary.uploader.destroy(publicId);
         }
 
-        await project.remove();
+        await Project.findByIdAndDelete(req.params.id);
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
         console.error('Error deleting project:', error);
-        res.status(500).json({ message: 'Error deleting project' });
+        res.status(500).json({ message: 'Error deleting project', error: error.message });
     }
 });
 
