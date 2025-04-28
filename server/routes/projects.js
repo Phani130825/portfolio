@@ -4,14 +4,23 @@ const Project = require('../models/Project');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/projects');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure Cloudinary storage
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'portfolio/projects',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
     }
 });
 
@@ -97,7 +106,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
         const projectData = {
             ...req.body,
             technologies: req.body.technologies.split(','),
-            imageUrl: req.file ? `${getBaseUrl(req)}/uploads/projects/${req.file.filename}` : null
+            imageUrl: req.file ? req.file.path : null
         };
 
         const project = new Project(projectData);
@@ -122,7 +131,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
         };
 
         if (req.file) {
-            projectData.imageUrl = `${getBaseUrl(req)}/uploads/projects/${req.file.filename}`;
+            projectData.imageUrl = req.file.path;
         }
 
         const project = await Project.findByIdAndUpdate(
@@ -149,11 +158,18 @@ router.delete('/:id', auth, async (req, res) => {
             return res.status(403).json({ message: 'Not authorized' });
         }
 
-        const project = await Project.findByIdAndDelete(req.params.id);
+        const project = await Project.findById(req.params.id);
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
 
+        // Delete image from Cloudinary if it exists
+        if (project.imageUrl) {
+            const publicId = project.imageUrl.split('/').slice(-1)[0].split('.')[0];
+            await cloudinary.uploader.destroy(publicId);
+        }
+
+        await project.remove();
         res.json({ message: 'Project deleted successfully' });
     } catch (error) {
         console.error('Error deleting project:', error);
