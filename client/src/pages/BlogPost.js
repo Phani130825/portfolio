@@ -13,11 +13,13 @@ import {
 } from '@mui/material';
 // import ReactMarkdown from 'react-markdown';
 import { fetchBlogPost } from '../store/slices/blogSlice';
+import { useTheme } from '@mui/material/styles';
 
 const BlogPost = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const { currentPost: post, loading, error } = useSelector((state) => state.blog);
+  const theme = useTheme();
 
   useEffect(() => {
     dispatch(fetchBlogPost(slug));
@@ -95,29 +97,68 @@ const BlogPost = () => {
               height: '8px',
             },
             '&::-webkit-scrollbar-track': {
-              background: '#f1f1f1',
+              background: theme.palette.mode === 'light' ? '#f1f1f1' : '#1e293b',
               borderRadius: '4px',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: '#888',
+              background: theme.palette.mode === 'light' ? '#888' : '#475569',
               borderRadius: '4px',
               '&:hover': {
-                background: '#555',
+                background: theme.palette.mode === 'light' ? '#555' : '#64748b',
               },
             },
             '& img': {
               maxWidth: '100%',
               height: 'auto',
+              borderRadius: '8px',
+              boxShadow: theme.palette.mode === 'light' 
+                ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                : '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12)',
+              margin: '1rem 0',
+              display: 'block',
             },
             '& pre': {
               maxWidth: '100%',
               overflowX: 'auto',
+              backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b',
+              padding: '1rem',
+              borderRadius: '8px',
+              margin: '1rem 0',
             },
             '& table': {
               maxWidth: '100%',
               overflowX: 'auto',
               display: 'block',
-            }
+              borderCollapse: 'collapse',
+              margin: '1rem 0',
+              '& th, & td': {
+                border: `1px solid ${theme.palette.mode === 'light' ? '#e2e8f0' : '#334155'}`,
+                padding: '0.75rem',
+              },
+              '& th': {
+                backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b',
+              },
+            },
+            '& blockquote': {
+              borderLeft: `4px solid ${theme.palette.primary.main}`,
+              paddingLeft: '1rem',
+              margin: '1rem 0',
+              fontStyle: 'italic',
+              color: theme.palette.text.secondary,
+            },
+            '& a': {
+              color: theme.palette.primary.main,
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            },
+            '& code': {
+              backgroundColor: theme.palette.mode === 'light' ? '#f1f5f9' : '#1e293b',
+              padding: '0.2rem 0.4rem',
+              borderRadius: '4px',
+              fontSize: '0.875em',
+            },
           }}
         >
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
