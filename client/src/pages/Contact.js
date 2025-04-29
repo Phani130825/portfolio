@@ -83,111 +83,82 @@ const Contact = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Contact Me
-        </Typography>
-        <Typography variant="subtitle1" align="center" color="text.secondary" paragraph>
-          Feel free to reach out to me for any inquiries or opportunities.
-        </Typography>
+    <Container maxWidth="md" sx={{ py: 4, pb: { xs: 12, sm: 8 } }}>
+      <Typography variant="h4" component="h1" gutterBottom align="center">
+        Contact Me
+      </Typography>
+      <Typography variant="subtitle1" align="center" color="text.secondary" paragraph>
+        Have a question or want to work together? Feel free to reach out!
+      </Typography>
 
-        <Grid container spacing={4} sx={{ mt: 2 }}>
-          {/* Contact Information */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3, height: '100%' }}>
-              <Box sx={{ mb: 3 }}>
-                <EmailIcon sx={{ mr: 1 }} />
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    wordBreak: 'break-all',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  phanidattakandukuri1308@gmail.com
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 3 }}>
-                <PhoneIcon sx={{ mr: 1 }} />
-                <Typography variant="body1">+91 8019747287</Typography>
-              </Box>
-              <Box>
-                <LocationOnIcon sx={{ mr: 1 }} />
-                <Typography variant="body1">Hyderabad, Telangana, India</Typography>
-              </Box>
-            </Paper>
+      <Paper sx={{ p: 4 }}>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                error={!!errors.subject}
+                helperText={errors.subject}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Message"
+                name="message"
+                multiline
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                error={!!errors.message}
+                helperText={errors.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} /> : 'Send Message'}
+              </Button>
+            </Grid>
           </Grid>
-
-          {/* Contact Form */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3 }}>
-              {success && (
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  Message sent successfully! I'll get back to you soon.
-                </Alert>
-              )}
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
-              )}
-              <Box component="form" onSubmit={handleSubmit}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="message"
-                  label="Message"
-                  id="message"
-                  multiline
-                  rows={4}
-                  value={formData.message}
-                  onChange={handleChange}
-                  error={!!errors.message}
-                  helperText={errors.message}
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3 }}
-                  disabled={loading}
-                >
-                  {loading ? <CircularProgress size={24} /> : 'Send Message'}
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </Paper>
     </Container>
   );
 };

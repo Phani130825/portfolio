@@ -93,7 +93,7 @@ const Home = () => {
       </Box>
 
       {/* Featured Projects */}
-      <Container sx={{ py: 8 }} maxWidth="md">
+      <Container sx={{ py: 8, pb: { xs: 12, sm: 8 } }} maxWidth="md">
         <Typography
           component="h2"
           variant="h4"
@@ -140,7 +140,7 @@ const Home = () => {
       </Container>
 
       {/* Featured Blog Posts */}
-      <Container sx={{ py: 8 }} maxWidth="md">
+      <Container sx={{ py: 8, pb: { xs: 12, sm: 8 } }} maxWidth="md">
         <Typography
           component="h2"
           variant="h4"

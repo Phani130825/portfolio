@@ -41,7 +41,7 @@ const Projects = () => {
   }
 
   return (
-    <Container sx={{ py: 4, pb: 8 }}>
+    <Container sx={{ py: 4, pb: { xs: 12, sm: 8 } }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
         My Projects
       </Typography>

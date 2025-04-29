@@ -80,7 +80,7 @@ const Blog = () => {
   }
 
   return (
-    <Container sx={{ py: 4 }}>
+    <Container sx={{ py: 4, pb: { xs: 12, sm: 8 } }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
         Blog Posts
       </Typography>
