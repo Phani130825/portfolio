@@ -127,7 +127,13 @@ const InteractionButtons = ({ targetType, targetId }) => {
     targetInteractions.filter(i => i.type === 'rating').length || 0;
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: 2,
+      flexWrap: { xs: 'wrap', sm: 'nowrap' },
+      justifyContent: { xs: 'space-between', sm: 'flex-start' }
+    }}>
       <Tooltip title={isAuthenticated ? (isLiked ? 'Unlike' : 'Like') : 'Login to like'}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton 
@@ -169,8 +175,14 @@ const InteractionButtons = ({ targetType, targetId }) => {
         </Box>
       </Tooltip>
 
-      <Tooltip title={isAuthenticated ? 'Rate this' : 'Login to rate'}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Tooltip title={isAuthenticated ? 'Rate this project' : 'Login to rate'}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          width: { xs: '100%', sm: 'auto' },
+          justifyContent: { xs: 'center', sm: 'flex-start' },
+          mt: { xs: 1, sm: 0 }
+        }}>
           <Rating
             value={userRating}
             onChange={handleRating}

@@ -201,7 +201,7 @@ const Navbar = ({ toggleColorMode }) => {
                 to={page.path}
                 onClick={handleCloseNavMenu}
                 sx={{ 
-                  my: 2,
+                  my: 2, 
                   mx: 1,
                   color: theme.palette.mode === 'light' ? 'text.primary' : 'text.primary',
                   display: 'block',
@@ -297,8 +297,8 @@ const Navbar = ({ toggleColorMode }) => {
                     (!setting.adminOnly || (setting.adminOnly && user?.role === 'admin')) && (
                       <React.Fragment key={setting.title}>
                         {index > 0 && <Divider sx={{ my: 1 }} />}
-                        <MenuItem
-                          onClick={() => handleMenuItemClick(setting)}
+                      <MenuItem
+                        onClick={() => handleMenuItemClick(setting)}
                           sx={{
                             color: theme.palette.mode === 'light' ? 'text.primary' : 'text.primary',
                             py: 1.5,
@@ -325,7 +325,7 @@ const Navbar = ({ toggleColorMode }) => {
                           >
                             {setting.title}
                           </Typography>
-                        </MenuItem>
+                      </MenuItem>
                       </React.Fragment>
                     )
                   ))}
