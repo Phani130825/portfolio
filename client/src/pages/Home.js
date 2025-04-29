@@ -10,22 +10,27 @@ import {
   CardContent,
   CardMedia,
   CircularProgress,
+  Paper,
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProjects } from '../store/slices/projectSlice';
 import { fetchBlogPosts } from '../store/slices/blogSlice';
+import LoginIcon from '@mui/icons-material/Login';
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { projects, loading: projectsLoading } = useSelector((state) => state.projects);
   const { posts, loading: postsLoading } = useSelector((state) => state.blog);
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
     // Fetch featured content
     dispatch(fetchProjects());
-    dispatch(fetchBlogPosts());
-  }, [dispatch]);
+    if (isAuthenticated) {
+      dispatch(fetchBlogPosts());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const featuredProjects = projects?.slice(0, 3) || [];
   const featuredPosts = posts?.slice(0, 3) || [];
@@ -145,40 +150,73 @@ const Home = () => {
         >
           Latest Blog Posts
         </Typography>
-        <Grid container spacing={4}>
-          {featuredPosts.map((post) => (
-            <Grid item key={post._id} xs={12} sm={6} md={4}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                  '&:hover': {
-                    transform: 'scale(1.02)',
-                  },
-                }}
-                onClick={() => navigate(`/blog/${post.slug}`)}
-              >
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={post.imageUrl || 'https://source.unsplash.com/random'}
-                  alt={post.title}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {post.title}
-                  </Typography>
-                  <Typography>
-                    {post.excerpt.substring(0, 100)}...
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {!isAuthenticated ? (
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 4, 
+              textAlign: 'center',
+              backgroundColor: 'background.paper',
+              borderRadius: 2,
+              mt: 2
+            }}
+          >
+            <Typography variant="body1" color="text.secondary" paragraph>
+              To view the latest blog posts, please log in to your account.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<LoginIcon />}
+              onClick={() => navigate('/login')}
+              sx={{ mt: 2 }}
+            >
+              Log In to View Posts
+            </Button>
+          </Paper>
+        ) : featuredPosts.length === 0 ? (
+          <Box textAlign="center" py={4}>
+            <Typography variant="h6" color="text.secondary">
+              No blog posts available yet.
+            </Typography>
+          </Box>
+        ) : (
+          <Grid container spacing={4}>
+            {featuredPosts.map((post) => (
+              <Grid item key={post._id} xs={12} sm={6} md={4}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                    '&:hover': {
+                      transform: 'scale(1.02)',
+                    },
+                  }}
+                  onClick={() => navigate(`/blog/${post.slug}`)}
+                >
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={post.imageUrl || 'https://source.unsplash.com/random'}
+                    alt={post.title}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {post.title}
+                    </Typography>
+                    <Typography>
+                      {post.excerpt.substring(0, 100)}...
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </Box>
   );
