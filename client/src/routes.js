@@ -17,7 +17,17 @@ import Footer from './components/layout/Footer';
 const AppRoutes = () => {
   return (
     <>
-      <Container component="main" sx={{ flex: 1, py: 4, display: 'flex', flexDirection: 'column' }}>
+      <Container 
+        component="main" 
+        sx={{ 
+          flex: 1, 
+          py: { xs: 6, sm: 4 }, 
+          pb: { xs: 12, sm: 8 },
+          display: 'flex', 
+          flexDirection: 'column',
+          minHeight: '100vh',
+        }}
+      >
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
