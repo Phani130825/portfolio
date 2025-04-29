@@ -53,7 +53,7 @@ const ProjectDetail = () => {
   const comments = targetInteractions.filter(interaction => interaction.type === 'comment');
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4, pb: 12 }}>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom>
           {project.title}
